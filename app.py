@@ -1,3 +1,9 @@
+import os
+
+# Criar arquivo de credenciais a partir da variável de ambiente
+if "GDRIVE_CREDENTIALS" in os.environ:
+    with open("credentials.json", "w") as f:
+        f.write(os.environ["GDRIVE_CREDENTIALS"])
 from flask import Flask, request, jsonify, render_template_string
 import pandas as pd
 import os
