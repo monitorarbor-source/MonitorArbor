@@ -1,13 +1,48 @@
+from flask import Flask, request, jsonify
+import pandas as pd
+import os
+
+app = Flask(__name__)
+
+# Nome do arquivo onde os dados serão salvos
+CSV_FILE = "dados.csv"
+
+# ===============================
+# Rota inicial
+# ===============================
+@app.route("/")
+def home():
+    return "<h2>🌿 Servidor Monitor Arbor está rodando!</h2><p>Use /dados para enviar dados e /grafico para visualizar.</p>"
+
+# ===============================
+# Rota que recebe dados enviados via POST
+# ===============================
+@app.route("/dados", methods=["POST"])
+def receber_dados():
+    data = request.get_json()
+
+    if not data or "sensor" not in data or "valor" not in data:
+        return jsonify({"status": "erro", "msg": "JSON inválido"}), 400
+
+    df = pd.DataFrame([data])
+
+    # Se arquivo já existir, adiciona no final
+    if os.path.exists(CSV_FILE):
+        df.to_csv(CSV_FILE, mode='a', header=False, index=False)
+    else:
+        df.to_csv(CSV_FILE, index=False)
+
+    return jsonify({"status": "ok"}), 200
+
+# ===============================
+# Rota que exibe os dados em uma tabela estilizada
+# ===============================
 @app.route("/grafico")
 def grafico():
-    # Verifica se já existe CSV com dados
     if not os.path.exists(CSV_FILE):
         return "<h3 style='font-family:sans-serif;text-align:center;'>Nenhum dado recebido ainda.</h3>"
 
-    # Lê dados do CSV
     df = pd.read_csv(CSV_FILE)
-
-    # Converte para HTML com classes CSS personalizadas
     tabela_html = df.to_html(
         classes="tabela",
         index=False,
@@ -15,7 +50,6 @@ def grafico():
         border=0
     )
 
-    # HTML estilizado
     html = f"""
     <!DOCTYPE html>
     <html lang="pt-BR">
@@ -72,4 +106,9 @@ def grafico():
 
     return html
 
-
+# ===============================
+# Inicializa o servidor Flask
+# ===============================
+if __name__ == "__main__":
+    # debug=True facilita testes locais
+    app.run(host="0.0.0.0", port=5000, debug=True)
