@@ -78,21 +78,6 @@ def receber_dados():
 # ===========================================
 # Rota para exibir dados em tabela HTML
 # ===========================================
-@app.route("/grafico")
-def grafico():
-    """Mostra tabela com dados salvos"""
-    if not os.path.exists(CSV_FILE):
-        return "Sem dados ainda!"
-
-    df = pd.read_csv(CSV_FILE)
-    if df.empty:
-        return "Sem dados ainda!"
-
-    html = """
-    <h1>📊 Dados recebidos</h1>
-    {{ tabela|safe }}
-    """
-    return render_template_string(html, tabela=df.to_html())
 
 # ===========================================
 # Rota inicial (teste)
