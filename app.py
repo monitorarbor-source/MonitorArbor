@@ -91,7 +91,7 @@ def home():
 # ===========================================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-@app.route("/grafico")
+@app.route("/dados")
 def grafico():
     if not os.path.exists(CSV_FILE):
         return "<h3>Nenhum dado recebido ainda.</h3>"
